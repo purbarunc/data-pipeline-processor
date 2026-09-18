@@ -1,32 +1,20 @@
 package com.purbarun.pipeline.model;
 
-// V1 NAIVE: Mutable POJO — fields can be changed after construction.
-// V2 will replace with a Java record.
-public class Department {
+import java.util.Objects;
 
-    private int id;
-    private String name;
-    private String location;
+/// # Department — V2 Improved (Step 2, Java 25)
+///
+/// **`record`** (finalized Java 16) replaces the mutable POJO.
+///
+/// Auto-generated: canonical constructor, `equals()`, `hashCode()`, `toString()`,
+/// and typed accessors `id()`, `name()`, `location()`.
+///
+/// The compact constructor enforces that `name` is never null —
+/// a `Department` without a name is structurally incoherent and should never reach any stage.
+public record Department(int id, String name, String location) {
 
-    public Department() {}
-
-    public Department(int id, String name, String location) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-    }
-
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    @Override
-    public String toString() {
-        return "Department{id=" + id + ", name=" + name + ", location=" + location + "}";
+    /// Compact canonical constructor — rejects a null department name at construction time.
+    public Department {
+        Objects.requireNonNull(name, "Department name must not be null (id=" + id + ")");
     }
 }

@@ -9,8 +9,13 @@ import com.purbarun.pipeline.model.Employee;
 import com.purbarun.pipeline.pipeline.DataPipeline;
 import com.purbarun.pipeline.util.DataLoader;
 
+/// # Main — Data Pipeline Processor entry point
+///
+/// Loads 10K employee records, runs the full V1 pipeline, and prints the summary report.
+/// For large-scale timing measurements use `Benchmark` instead.
 public class Main {
 
+    /// Loads data, executes the pipeline, and prints the department summary report.
     public static void main(String[] args) {
         System.out.println("=== Data Pipeline Processor — V1 (Naive) ===\n");
 

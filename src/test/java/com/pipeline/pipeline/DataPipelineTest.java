@@ -15,6 +15,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/// # DataPipelineTest — full pipeline integration tests
+///
+/// Exercises the complete filter → enrich → validate → aggregate flow
+/// using small, controlled employee lists for deterministic assertions.
 class DataPipelineTest {
 
     private DataPipeline pipeline;
@@ -47,7 +51,8 @@ class DataPipelineTest {
         List<DepartmentSummary> summaries = pipeline.execute(
                 employees, true, 0, departments, "test-tenant");
         assertEquals(1, summaries.size());
-        assertEquals(1, summaries.get(0).getEmployeeCount());
+        /// V2: record accessor `employeeCount()` replaces `getEmployeeCount()`
+        assertEquals(1, summaries.get(0).employeeCount());
     }
 
     @Test
@@ -76,11 +81,12 @@ class DataPipelineTest {
         List<DepartmentSummary> summaries = pipeline.execute(
                 employees, false, 0, departments, "test-tenant");
         assertEquals(1, summaries.size());
-        DepartmentSummary dept = summaries.get(0);
-        assertEquals(70_000, dept.getAverageSalary(), 0.01);
-        assertEquals(60_000, dept.getMinSalary(),     0.01);
-        assertEquals(80_000, dept.getMaxSalary(),     0.01);
-        assertEquals(140_000, dept.getTotalSalary(),  0.01);
+        /// V2: record accessors replace all POJO getters
+        var dept = summaries.get(0);
+        assertEquals(70_000,  dept.averageSalary(), 0.01);
+        assertEquals(60_000,  dept.minSalary(),     0.01);
+        assertEquals(80_000,  dept.maxSalary(),     0.01);
+        assertEquals(140_000, dept.totalSalary(),   0.01);
     }
 
     @Test
@@ -90,6 +96,7 @@ class DataPipelineTest {
         );
         List<DepartmentSummary> summaries = pipeline.execute(
                 employees, false, 0, departments, "test-tenant");
-        assertEquals("Engineering", summaries.get(0).getDepartmentName());
+        /// V2: record accessor `departmentName()` replaces `getDepartmentName()`
+        assertEquals("Engineering", summaries.get(0).departmentName());
     }
 }

@@ -1,48 +1,30 @@
 package com.purbarun.pipeline.model;
 
-// V1 NAIVE: Mutable POJO — built up incrementally by AggregateStage via setters.
-// V2 will replace with a record that is constructed atomically.
-public class DepartmentSummary {
+/// # DepartmentSummary — V2 Improved (Step 2, Java 25)
+///
+/// **`record`** (finalized Java 16) replaces the mutable POJO.
+///
+/// V1's `AggregateStage` built `DepartmentSummary` incrementally via six setter calls —
+/// a partially-initialised object existed in heap throughout the computation loop.
+///
+/// V2: `AggregateStage` computes ALL stats first, then constructs the record in a single
+/// atomic call. The moment this object exists it is valid and complete.
+///
+/// Generated accessors: `departmentId()`, `departmentName()`, `employeeCount()`,
+/// `averageSalary()`, `minSalary()`, `maxSalary()`, `totalSalary()`
+public record DepartmentSummary(
+        int    departmentId,
+        String departmentName,
+        int    employeeCount,
+        double averageSalary,
+        double minSalary,
+        double maxSalary,
+        double totalSalary) {
 
-    private int departmentId;
-    private String departmentName;
-    private int employeeCount;
-    private double averageSalary;
-    private double minSalary;
-    private double maxSalary;
-    private double totalSalary;
-
-    public DepartmentSummary() {}
-
-    public DepartmentSummary(int departmentId, String departmentName) {
-        this.departmentId = departmentId;
-        this.departmentName = departmentName;
-    }
-
-    public int getDepartmentId() { return departmentId; }
-    public void setDepartmentId(int departmentId) { this.departmentId = departmentId; }
-
-    public String getDepartmentName() { return departmentName; }
-    public void setDepartmentName(String departmentName) { this.departmentName = departmentName; }
-
-    public int getEmployeeCount() { return employeeCount; }
-    public void setEmployeeCount(int employeeCount) { this.employeeCount = employeeCount; }
-
-    public double getAverageSalary() { return averageSalary; }
-    public void setAverageSalary(double averageSalary) { this.averageSalary = averageSalary; }
-
-    public double getMinSalary() { return minSalary; }
-    public void setMinSalary(double minSalary) { this.minSalary = minSalary; }
-
-    public double getMaxSalary() { return maxSalary; }
-    public void setMaxSalary(double maxSalary) { this.maxSalary = maxSalary; }
-
-    public double getTotalSalary() { return totalSalary; }
-    public void setTotalSalary(double totalSalary) { this.totalSalary = totalSalary; }
-
-    @Override
-    public String toString() {
-        return "DepartmentSummary{dept=" + departmentName + ", count=" + employeeCount
-                + ", avgSalary=" + String.format("%.2f", averageSalary) + "}";
+    /// Compact canonical constructor — rejects a negative employee count.
+    public DepartmentSummary {
+        if (employeeCount < 0) {
+            throw new IllegalArgumentException("employeeCount must be >= 0, got: " + employeeCount);
+        }
     }
 }

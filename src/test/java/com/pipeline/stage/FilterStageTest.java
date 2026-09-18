@@ -11,6 +11,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/// # FilterStageTest — unit tests for FilterStage
+///
+/// Verifies active-status filtering and salary-threshold filtering independently
+/// and in combination, using V2 record accessor style (`active()`, `salary()`).
 class FilterStageTest {
 
     private FilterStage filterStage;
@@ -32,21 +36,23 @@ class FilterStageTest {
     void shouldFilterOutInactiveEmployeesWhenOnlyActiveIsTrue() {
         List<Employee> result = filterStage.process(employees, true, 0);
         assertEquals(3, result.size());
-        assertTrue(result.stream().allMatch(Employee::isActive));
+        /// V2: record accessor `active()` replaces `isActive()`
+        assertTrue(result.stream().allMatch(Employee::active));
     }
 
     @Test
     void shouldFilterBySalaryThreshold() {
         List<Employee> result = filterStage.process(employees, false, 50_000);
         assertEquals(4, result.size());
-        assertTrue(result.stream().allMatch(e -> e.getSalary() >= 50_000));
+        /// V2: record accessor `salary()` replaces `getSalary()`
+        assertTrue(result.stream().allMatch(e -> e.salary() >= 50_000));
     }
 
     @Test
     void shouldApplyBothActiveAndSalaryFilter() {
         List<Employee> result = filterStage.process(employees, true, 50_000);
         assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(e -> e.isActive() && e.getSalary() >= 50_000));
+        assertTrue(result.stream().allMatch(e -> e.active() && e.salary() >= 50_000));
     }
 
     @Test
@@ -63,8 +69,8 @@ class FilterStageTest {
 
     @Test
     void shouldIncludeEmployeeAtExactThreshold() {
-        // V1 uses strict less-than: salary < threshold means employees AT the threshold pass through.
-        // e.g. salary=50_000, threshold=50_000 → 50_000 < 50_000 is false → employee is INCLUDED.
+        /// V1 uses strict less-than: `salary < threshold` means employees AT the threshold pass through.
+        /// e.g. `salary=50_000, threshold=50_000` → `50_000 < 50_000` is false → employee is INCLUDED.
         List<Employee> result = filterStage.process(
                 List.of(new Employee(1, "Alice", 50_000, 1, true)),
                 false, 50_000);
